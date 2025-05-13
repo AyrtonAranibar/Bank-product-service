@@ -14,6 +14,7 @@ public class Product {
     private String type;      //activo, pasivo
     private ProductSubtype subtype;   //ahorro, cuenta_corriente, plazo_fijo...(en ingles)
     private String clientId;  //id del cliente
+    private Double balance; //saldo
     private Double maintenanceFee;         //para cuenta corriente
     private Integer monthlyMovementLimit;  //para cuenta ahorro
     private Integer allowedMovementDay;    //para cuenta plazo fijo
