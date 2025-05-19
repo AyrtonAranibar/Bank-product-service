@@ -21,5 +21,4 @@ public class Product {
     private Double creditLimit;            //para créditos y tarjetas
     private List<String> holders;              //titulares (empresas)
     private List<String> authorizedSignatories; //firmantes autorizados
-
 }

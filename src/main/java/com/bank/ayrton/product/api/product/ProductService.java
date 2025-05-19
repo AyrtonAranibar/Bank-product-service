@@ -11,5 +11,5 @@ public interface ProductService {
     Mono<Product> save(Product product);
     Mono<Product> update(String id, Product product);
     Mono<Void> delete(String id);
-
+    Flux<Product> findByClientId(String id);
 }

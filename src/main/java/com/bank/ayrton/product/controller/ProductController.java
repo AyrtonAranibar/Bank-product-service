@@ -48,10 +48,15 @@ public class ProductController {
     }
 
     //elimina un producto por ID
-
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> delete(@PathVariable String id) {
         return service.delete(id)
                 .then(Mono.just(ResponseEntity.noContent().<Void>build()));
+    }
+
+    // el sistema permite consultar todos los productos que tiene un cliente
+    @GetMapping("/client/{clientId}")
+    public Flux<Product> findByClientId(@PathVariable String clientId) {
+        return service.findByClientId(clientId);
     }
 }
