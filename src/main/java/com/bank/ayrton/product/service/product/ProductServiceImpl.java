@@ -45,8 +45,46 @@ public class ProductServiceImpl implements ProductService {
                 .flatMap(client -> {
                     String clientType = client.getType().toLowerCase();
                     ProductSubtype subtype = product.getSubtype();
+                    String clientSubtype = client.getSubtype() != null ? client.getSubtype().name().toLowerCase() : "";
 
-                    log.info("Cliente recibido para validación: {} (tipo: {})", client.getId(), clientType);
+                    log.info("Cliente recibido para validación: {} (tipo: {}, subtipo: {})", client.getId(), clientType, clientSubtype);
+
+                    //Valida que el balance no sea menor a 0
+                    if (product.getBalance() != null && product.getBalance() < 0) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "El saldo inicial no puede ser negativo"));
+                    }
+
+                    // PYME Cuenta corriente sin comisión, debe tener tarjeta de credito
+                    if ("empresarial".equals(clientType) && "pyme".equals(clientSubtype) &&
+                            subtype == ProductSubtype.CURRENT_ACCOUNT) {
+                        return repository.findByClientId(client.getId())
+                                .filter(p -> p.getSubtype() == ProductSubtype.CREDIT_CARD)
+                                .hasElements()
+                                .flatMap(hasCard -> {
+                                    if (!hasCard) {
+                                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                                "Cliente PYME debe tener una tarjeta de crédito para abrir cuenta corriente"));
+                                    }
+                                    product.setMaintenanceFee(0.0);
+                                    return repository.save(product);
+                                });
+                    }
+
+                    // VIP  Cuenta ahorro con saldo promedio mínimo y tarjeta credito
+                    if ("personal".equals(clientType) && "vip".equals(clientSubtype) &&
+                            subtype == ProductSubtype.SAVINGS) {
+                        return repository.findByClientId(client.getId())
+                                .filter(p -> p.getSubtype() == ProductSubtype.CREDIT_CARD)
+                                .hasElements()
+                                .flatMap(hasCard -> {
+                                    if (!hasCard) {
+                                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                                "Cliente VIP debe tener una tarjeta de crédito para abrir cuenta de ahorro"));
+                                    }
+                                    return repository.save(product);
+                                });
+                    }
 
                     // Empresa no puede tener ahorro o plazo fijo
                     if (clientType.equals("empresarial") &&
@@ -56,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
                                 "Cliente empresarial no puede tener cuentas de ahorro ni de plazo fijo"));
                     }
 
-                    //  cliente personal solo una cuenta de cada tipo pasivo
+                    // cliente personal solo una cuenta de cada tipo pasivo
                     if (clientType.equals("personal") && product.getType().equalsIgnoreCase("pasivo")) {
                         return repository.findByClientId(product.getClientId())
                                 .filter(p -> p.getSubtype() == subtype)
