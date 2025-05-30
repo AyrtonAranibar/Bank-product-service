@@ -11,3 +11,17 @@ spring:
       uri: mongodb://localhost:27017/product-database
   kafka:
     bootstrap-servers: localhost:9092
+
+
+resilience4j: # resiliencia -> circuit breaker
+  circuitbreaker:
+    instances:
+      clientService:
+        registerHealthIndicator: true #registra el estado (cerrado, abierdo, semiabierto)
+        slidingWindowSize: 5 #
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 2
+        slowCallRateThreshold: 100
+        slowCallDurationThreshold: 2s

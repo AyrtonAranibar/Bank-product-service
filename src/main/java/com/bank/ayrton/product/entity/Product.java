@@ -23,4 +23,5 @@ public class Product {
     private List<String> authorizedSignatories; //firmantes autorizados
     private Integer freeTransactionLimit; // transacciones sin comision
     private Double transactionFee;        // monto de comision
+    private String status; //puede ser vencido/activo
 }

@@ -59,4 +59,13 @@ public class ProductController {
     public Flux<Product> findByClientId(@PathVariable String clientId) {
         return service.findByClientId(clientId);
     }
+
+    @PutMapping("/{id}/mark-overdue")
+    public Mono<ResponseEntity<Product>> markProductAsOverdue(@PathVariable String id) {
+        return service.markAsOverdue(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+
 }

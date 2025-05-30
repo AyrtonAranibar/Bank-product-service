@@ -1,6 +1,7 @@
 package com.bank.ayrton.product.api.product;
 
 import com.bank.ayrton.product.entity.Product;
+import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,4 +13,5 @@ public interface ProductService {
     Mono<Product> update(String id, Product product);
     Mono<Void> delete(String id);
     Flux<Product> findByClientId(String id);
+    Mono<Product> markAsOverdue(String id);
 }
