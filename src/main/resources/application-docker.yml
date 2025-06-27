@@ -4,21 +4,23 @@ server:
 spring:
   application:
     name: product-service
+
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://config-server:8888
+
   data:
     mongodb:
-      uri: mongodb://localhost:27017/product-database
+      uri: mongodb://host.docker.internal:27017/product-database
+
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
 
-
-resilience4j: # resiliencia -> circuit breaker
+resilience4j:
   circuitbreaker:
     instances:
       clientService:
-        registerHealthIndicator: true #registra el estado (cerrado, abierdo, semiabierto)
-        slidingWindowSize: 5 #
+        registerHealthIndicator: true
+        slidingWindowSize: 5
         minimumNumberOfCalls: 3
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
@@ -29,6 +31,6 @@ resilience4j: # resiliencia -> circuit breaker
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://eureka-server:8761/eureka
     register-with-eureka: true
     fetch-registry: true
