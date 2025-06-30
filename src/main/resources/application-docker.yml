@@ -13,7 +13,7 @@ spring:
       uri: mongodb://host.docker.internal:27017/product-database
 
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: host.docker.internal:9092
 
 resilience4j:
   circuitbreaker:
@@ -31,6 +31,6 @@ resilience4j:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/eureka
+      defaultZone: http://host.docker.internal:8761/eureka
     register-with-eureka: true
     fetch-registry: true
